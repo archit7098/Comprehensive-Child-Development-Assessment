@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Development Assessment Tool</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4682B4;
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
+            color: #4682B4;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], input[type="date"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .radio-group {
+            margin: 5px 0;
+        }
+
+        fieldset {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        legend {
+            font-weight: bold;
+            color: #4682B4;
+            padding: 0 5px;
+        }
+
+        .checkbox-item {
+            margin: 5px 0;
+        }
+
+        .checkbox-container {
+            columns: 2;
+        }
+
+        .section-title {
+            background-color: #4682B4;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .subsection-title {
+            color: #4682B4;
+            border-bottom: 1px solid #4682B4;
+            margin-top: 15px;
+        }
+
+        .btn {
+            background-color: #4682B4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background-color: #3a6d99;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #summary {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .summary-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .signature-section {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 250px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .notes {
+            font-style: italic;
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .age-section {
+            display: none; /* Hide all sections by default */
+        }
+
+        @media print {
+            button:not(.no-print) {
+                display: none;
+            }
+            
+            body {
+                padding: 0;
+                font-size: 12px;
+            }
+            
+            .header {
+                margin-bottom: 15px;
+            }
+            
+            fieldset {
+                page-break-inside: avoid;
+            }
+            
+            .btn-group {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Comprehensive Child Development Assessment</h1>
+        <p>A standardized tool for evaluating developmental milestones in children</p>
+    </div>
+
+    <form id="assessmentForm">
+        <fieldset>
+            <legend>Patient Details</legend>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="evaluator">Evaluator Name & Designation:</label>
+                <input type="text" id="evaluator" name="evaluator" required>
+            </div>
+ <div class="form-group">
+                <label>Gender:</label>
+                <div class="radio-group">
+                    <input type="radio" id="male" name="gender" value="Male">
+                    <label for="male" style="display: inline;">Male</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" id="female" name="gender" value="Female">
+                    <label for="female" style="display: inline;">Female</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" id="other" name="gender" value="Other">
+                    <label for="other" style="display: inline;">Other</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age (Auto-Calculated):</label>
+                <input type="text" id="age" name="age" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="assessment-date">Date of Assessment:</label>
+                <input type="text" id="assessment-date" name="assessment-date" readonly>
+            </div>
+            <button type="button" id="calculate-btn" class="btn">Calculate Age & Show Relevant Sections</button>
+        </fieldset>
+
+        <div class="age-section" id="section-infant">
+            <h2 class="section-title">Section 1: Infants (0-12 Months)</h2>
+            
+            <fieldset>
+                <legend>1.1 Gross Motor Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="hold-head" name="infant-gross-motor">
+                    <label for="hold-head" style="display: inline;">Holds head steady while sitting (By 4 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rolls-over" name="infant-gross-motor">
+                    <label for="rolls-over" style="display: inline;">Rolls over (By 6 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="sits-unsupported" name="infant-gross-motor">
+                    <label for="sits-unsupported" style="display: inline;">Sits without support (By 8 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pulls-stand" name="infant-gross-motor">
+                    <label for="pulls-stand" style="display: inline;">Pulls to stand (By 10 months)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>1.2 Fine Motor & Adaptive Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="grasps" name="infant-fine-motor">
+                    <label for="grasps" style="display: inline;">Grasps objects (By 3 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="transfers" name="infant-fine-motor">
+                    <label for="transfers" style="display: inline;">Transfers objects hand to hand (By 6 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="pincer" name="infant-fine-motor">
+                    <label for="pincer" style="display: inline;">Pincer grasp (By 9-12 months)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>1.3 Language & Communication</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="coos" name="infant-language">
+                    <label for="coos" style="display: inline;">Coos and babbles (By 3 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="responds-name" name="infant-language">
+                    <label for="responds-name" style="display: inline;">Responds to name (By 6-9 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="says-words" name="infant-language">
+                    <label for="says-words" style="display: inline;">Says 1-2 meaningful words (By 12 months)</label>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="age-section" id="section-toddler">
+            <h2 class="section-title">Section 2: Toddlers (1-3 Years)</h2>
+
+            <fieldset>
+                <legend>2.1 Gross Motor Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="walks" name="toddler-gross-motor">
+                    <label for="walks" style="display: inline;">Walks independently (By 12-15 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="runs" name="toddler-gross-motor">
+                    <label for="runs" style="display: inline;">Runs well (By 2 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="jumps" name="toddler-gross-motor">
+                    <label for="jumps" style="display: inline;">Jumps with both feet (By 3 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>2.2 Fine Motor & Adaptive Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="stacks" name="toddler-fine-motor">
+                    <label for="stacks" style="display: inline;">Stacks 2-3 blocks (By 18 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="draws-circle" name="toddler-fine-motor">
+                    <label for="draws-circle" style="display: inline;">Draws a circle (By 3 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>2.3 Language & Communication</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="two-words" name="toddler-language">
+                    <label for="two-words" style="display: inline;">Uses 2-word phrases (By 24 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="short-sentences" name="toddler-language">
+                    <label for="short-sentences" style="display: inline;">Speaks in short sentences (By 3 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>2.4 Social & Emotional Development</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="preference" name="toddler-social">
+                    <label for="preference" style="display: inline;">Shows preference for caregivers (By 6 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="imitates" name="toddler-social">
+                    <label for="imitates" style="display: inline;">Imitates actions (By 12-18 months)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="plays" name="toddler-social">
+                    <label for="plays" style="display: inline;">Plays with other children (By 3 years)</label>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="age-section" id="section-preschool">
+            <h2 class="section-title">Section 3: Preschoolers (3-6 Years)</h2>
+
+            <fieldset>
+                <legend>3.1 Gross Motor Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="balances" name="preschool-gross-motor">
+                    <label for="balances" style="display: inline;">Balances on one foot for 5 seconds (By 4 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="hops" name="preschool-gross-motor">
+                    <label for="hops" style="display: inline;">Hops on one foot (By 5 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>3.2 Fine Motor & Adaptive Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="scissors" name="preschool-fine-motor">
+                    <label for="scissors" style="display: inline;">Uses scissors (By 4 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="shoelaces" name="preschool-fine-motor">
+                    <label for="shoelaces" style="display: inline;">Ties shoelaces (By 5-6 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>3.3 Language & Communication</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="stories" name="preschool-language">
+                    <label for="stories" style="display: inline;">Tells simple stories (By 4-5 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="complex-instructions" name="preschool-language">
+                    <label for="complex-instructions" style="display: inline;">Understands complex instructions (By 3-4 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>3.4 Cognitive & School Readiness</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="identifies-shapes" name="preschool-cognitive">
+                    <label for="identifies-shapes" style="display: inline;">Identifies basic shapes/colors (By 3-4 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="counts" name="preschool-cognitive">
+                    <label for="counts" style="display: inline;">Counts to 10 (By 5 years)</label>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="age-section" id="section-school">
+            <h2 class="section-title">Section 4: School-Aged Children (6-12 Years)</h2>
+
+            <fieldset>
+                <legend>4.1 Gross Motor Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="skips" name="school-gross-motor">
+                    <label for="skips" style="display: inline;">Skips with coordination (By 6 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="bicycle" name="school-gross-motor">
+                    <label for="bicycle" style="display: inline;">Rides a bicycle (By 7 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>4.2 Fine Motor & Adaptive Skills</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="sentences" name="school-fine-motor">
+                    <label for="sentences" style="display: inline;">Writes full sentences (By 6-7 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="adult-grasp" name="school-fine-motor">
+                    <label for="adult-grasp" style="display: inline;">Uses adult-like grasp (By 7 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>4.3 Language & Communication</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="time-concepts" name="school-language">
+                    <label for="time-concepts" style="display: inline;">Understands time concepts (By 6 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="reads" name="school-language">
+                    <label for="reads" style="display: inline;">Reads age-appropriate books (By 7-8 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>4.4 Social & Emotional Development</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="friendships" name="school-social">
+                    <label for="friendships" style="display: inline;">Makes and maintains friendships (By 6-7 years)</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rules" name="school-social">
+                    <label for="rules" style="display: inline;">Understands rules and consequences (By 5 years)</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>4.5 Behavioral Concerns (SDQ-Based)</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="aggressive" name="school-behavior">
+                    <label for="aggressive" style="display: inline;">Aggressive behavior</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="hyperactivity" name="school-behavior">
+                    <label for="hyperactivity" style="display: inline;">Hyperactivity or impulsivity</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="anxiety" name="school-behavior">
+                    <label for="anxiety" style="display: inline;">Anxiety or excessive shyness</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="peer-difficulty" name="school-behavior">
+                    <label for="peer-difficulty" style="display: inline;">Difficulty in peer interactions</label>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="age-section" id="section-screening">
+            <h2 class="section-title">Section 5: Screening for Developmental Disorders</h2>
+
+            <fieldset>
+                <legend>5.1 Autism Red Flags (M-CHAT-Based)</legend>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="eye-contact" name="autism-screening">
+                    <label for="eye-contact" style="display: inline;">Limited eye contact</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="social-smile" name="autism-screening">
+                    <label for="social-smile" style="display: inline;">No social smiling by 6 months</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="no-babbling" name="autism-screening">
+                    <label for="no-babbling" style="display: inline;">No babbling by 12 months</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="no-pointing" name="autism-screening">
+                    <label for="no-pointing" style="display: inline;">No pointing or waving by 18 months</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="repetitive" name="autism-screening">
+                    <label for="repetitive" style="display: inline;">Repetitive behaviors or restricted interests</label>
+                </div>
+            </fieldset>
+        </div>
+
+        <div id="section-summary">
+            <h2 class="section-title">Section 6: Summary & Recommendations</h2>
+
+            <fieldset>
+                <legend>Assessment Summary</legend>
+                <div class="form-group">
+                    <label>Developmental Status:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="normal" name="dev-status" value="Normal">
+                        <label for="normal" style="display: inline;">Normal</label>
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" id="at-risk" name="dev-status" value="At-Risk">
+                        <label for="at-risk" style="display: inline;">At-Risk</label>
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" id="delayed" name="dev-status" value="Delayed">
+                        <label for="delayed" style="display: inline;">Delayed</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="concerns">Areas of Concern (if any):</label>
+                    <input type="text" id="concerns" name="concerns">
+                </div>
+
+                <div class="form-group">
+                    <label>Recommendations:</label>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="routine" name="recommendations">
+                        <label for="routine" style="display: inline;">Routine Follow-up</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="further-eval" name="recommendations">
+                        <label for="further-eval" style="display: inline;">Further Evaluation</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="referral" name="recommendations">
+                        <label for="referral" style="display: inline;">Referral</label>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="signature-section">
+                <h3>Signature & Stamp</h3>
+                <div class="form-group">
+                    <label for="evaluator-name">Evaluator's Name:</label>
+                    <input type="text" id="evaluator-name" name="evaluator-name">
+                </div>
+                <div class="form-group">
+                    <label for="designation">Designation:</label>
+                    <input type="text" id="designation" name="designation">
+                </div>
+                <div class="form-group">
+                    <label for="signature">Signature:</label>
+                    <div class="signature-line"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signature-date">Date:</label>
+                    <input type="text" id="signature-date" name="signature-date" readonly>
+                </div>
+            </div>
+
+            <div class="notes">
+                <p><strong>Notes:</strong></p>
+                <ul>
+                    <li>This form is intended as a screening tool and not a diagnostic test.</li>
+                    <li>If concerns arise, refer the child for a comprehensive developmental assessment.</li>
+                    <li>Adapt scoring based on standardized norms to automate result generation.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button type="button" id="print-btn" class="btn">Print Assessment</button>
+            <button type="button" id="reset-btn" class="btn">Reset Form</button>
+        </div>
+    </form>
+
+    <script>
+        // Format date as DD/MM/YYYY
+        function formatDate(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Calculate age in years and months
+        function calculateAge(birthDate) {
+            const today = new Date();
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            
+            if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+                years--;
+                months += 12;
+            }
+            
+            return { years, months };
+        }
+
+        // Set today's date on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const formattedDate = formatDate(today);
+            
+            document.getElementById('assessment-date').value = formattedDate;
+            document.getElementById('signature-date').value = formattedDate;
+            
+            // Set up event listeners
+            document.getElementById('calculate-btn').addEventListener('click', function() {
+                const dob = document.getElementById('dob').value;
+                if (!dob) {
+                    alert('Please enter the date of birth first.');
+                    return;
+                }
+                
+                const birthDate = new Date(dob);
+                const age = calculateAge(birthDate);
+                document.getElementById('age').value = `${age.years} years, ${age.months} months`;
+                
+                // Show relevant sections based on age
+                showRelevantSections(age);
+            });
+            
+            document.getElementById('print-btn').addEventListener('click', function() {
+                window.print();
+            });
+            
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
+                    document.getElementById('assessmentForm').reset();
+                    
+                    // Reset calculated fields
+                    document.getElementById('age').value = '';
+                    document.getElementById('assessment-date').value = formattedDate;
+                    document.getElementById('signature-date').value = formattedDate;
+                    
+                    // Hide all age sections
+                    hideAllSections();
+                }
+            });
+            
+            // Transfer evaluator name to signature section
+            document.getElementById('evaluator').addEventListener('input', function() {
+                document.getElementById('evaluator-name').value = this.value;
+            });
+        });
+
+        // Show relevant sections based on child's age
+        function showRelevantSections(age) {
+            // Hide all sections first
+            hideAllSections();
+            
+            // Always show summary section
+            document.getElementById('section-summary').style.display = 'block';
+            
+            // Show appropriate sections based on age
+            if (age.years === 0 && age.months <= 12) {
+                // Infant (0-12 months)
+                document.getElementById('section-infant').style.display = 'block';
+            } 
+            
+            if ((age.years === 0 && age.months >= 6) || (age.years >= 1 && age.years < 3)) {
+                // Toddler (1-3 years) - showing from 6 months for some social milestones
+                document.getElementById('section-toddler').style.display = 'block';
+            }
+            
+            if (age.years >= 3 && age.years < 6) {
+                // Preschool (3-6 years)
+                document.getElementById('section-preschool').style.display = 'block';
+            }
+            
+            if (age.years >= 6 && age.years <= 12) {
+                // School Age (6-12 years)
+                document.getElementById('section-school').style.display = 'block';
+            }
+            
+            // Show screening section for all ages
+            document.getElementById('section-screening').style.display = 'block';
+        }
+
+        // Hide all age-specific sections
+        function hideAllSections() {
+            const sections = document.querySelectorAll('.age-section');
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
