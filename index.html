@@ -566,115 +566,375 @@
 
     <script>
         // Format date as DD/MM/YYYY
-        function formatDate(date) {
-            const day = date.getDate().toString().padStart(2, '0');
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
+function formatDate(date) {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
 
-        // Calculate age in years and months
-        function calculateAge(birthDate) {
-            const today = new Date();
-            let years = today.getFullYear() - birthDate.getFullYear();
-            let months = today.getMonth() - birthDate.getMonth();
-            
-            if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
-                years--;
-                months += 12;
-            }
-            
-            return { years, months };
-        }
+// Calculate age in years and months
+function calculateAge(birthDate) {
+    const today = new Date();
+    let years = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    
+    if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
+        years--;
+        months += 12;
+    }
+    
+    return { years, months };
+}
 
-        // Set today's date on load
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            const formattedDate = formatDate(today);
+// Set today's date on load
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const formattedDate = formatDate(today);
+    
+    document.getElementById('assessment-date').value = formattedDate;
+    document.getElementById('signature-date').value = formattedDate;
+    
+    // Create summary section if it doesn't exist
+    createSummarySection();
+    
+    // Set up event listeners
+    document.getElementById('calculate-btn').addEventListener('click', function() {
+        const dob = document.getElementById('dob').value;
+        if (!dob) {
+            alert('Please enter the date of birth first.');
+            return;
+        }
+        
+        const birthDate = new Date(dob);
+        const age = calculateAge(birthDate);
+        document.getElementById('age').value = `${age.years} years, ${age.months} months`;
+        
+        // Show relevant sections based on age
+        showRelevantSections(age);
+    });
+    
+    document.getElementById('print-btn').addEventListener('click', function() {
+        window.print();
+    });
+    
+    document.getElementById('reset-btn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
+            document.getElementById('assessmentForm').reset();
             
+            // Reset calculated fields
+            document.getElementById('age').value = '';
             document.getElementById('assessment-date').value = formattedDate;
             document.getElementById('signature-date').value = formattedDate;
             
-            // Set up event listeners
-            document.getElementById('calculate-btn').addEventListener('click', function() {
-                const dob = document.getElementById('dob').value;
-                if (!dob) {
-                    alert('Please enter the date of birth first.');
-                    return;
-                }
-                
-                const birthDate = new Date(dob);
-                const age = calculateAge(birthDate);
-                document.getElementById('age').value = `${age.years} years, ${age.months} months`;
-                
-                // Show relevant sections based on age
-                showRelevantSections(age);
-            });
+            // Reset summary section
+            resetSummarySection();
             
-            document.getElementById('print-btn').addEventListener('click', function() {
-                window.print();
-            });
-            
-            document.getElementById('reset-btn').addEventListener('click', function() {
-                if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
-                    document.getElementById('assessmentForm').reset();
-                    
-                    // Reset calculated fields
-                    document.getElementById('age').value = '';
-                    document.getElementById('assessment-date').value = formattedDate;
-                    document.getElementById('signature-date').value = formattedDate;
-                    
-                    // Hide all age sections
-                    hideAllSections();
-                }
-            });
-            
-            // Transfer evaluator name to signature section
-            document.getElementById('evaluator').addEventListener('input', function() {
-                document.getElementById('evaluator-name').value = this.value;
-            });
-        });
-
-        // Show relevant sections based on child's age
-        function showRelevantSections(age) {
-            // Hide all sections first
+            // Hide all age sections
             hideAllSections();
-            
-            // Always show summary section
-            document.getElementById('section-summary').style.display = 'block';
-            
-            // Show appropriate sections based on age
-            if (age.years === 0 && age.months <= 12) {
-                // Infant (0-12 months)
-                document.getElementById('section-infant').style.display = 'block';
-            } 
-            
-            if ((age.years === 0 && age.months >= 6) || (age.years >= 1 && age.years < 3)) {
-                // Toddler (1-3 years) - showing from 6 months for some social milestones
-                document.getElementById('section-toddler').style.display = 'block';
-            }
-            
-            if (age.years >= 3 && age.years < 6) {
-                // Preschool (3-6 years)
-                document.getElementById('section-preschool').style.display = 'block';
-            }
-            
-            if (age.years >= 6 && age.years <= 12) {
-                // School Age (6-12 years)
-                document.getElementById('section-school').style.display = 'block';
-            }
-            
-            // Show screening section for all ages
-            document.getElementById('section-screening').style.display = 'block';
         }
+    });
+    
+    // Transfer evaluator name to signature section
+    document.getElementById('evaluator').addEventListener('input', function() {
+        document.getElementById('evaluator-name').value = this.value;
+    });
 
-        // Hide all age-specific sections
-        function hideAllSections() {
-            const sections = document.querySelectorAll('.age-section');
-            sections.forEach(section => {
-                section.style.display = 'none';
-            });
+    // Add calculate score button
+    document.getElementById('calculate-score-btn').addEventListener('click', function() {
+        calculateScore();
+    });
+
+    // Auto-update dev-status radio buttons based on score
+    document.querySelectorAll('input[name="dev-status"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            updateSummaryBoxClass();
+        });
+    });
+});
+
+// Show relevant sections based on child's age
+function showRelevantSections(age) {
+    // Hide all sections first
+    hideAllSections();
+    
+    // Always show summary section
+    document.getElementById('section-summary').style.display = 'block';
+    
+    // Show appropriate sections based on age
+    if (age.years === 0 && age.months <= 12) {
+        // Infant (0-12 months)
+        document.getElementById('section-infant').style.display = 'block';
+    } 
+    
+    if ((age.years === 0 && age.months >= 6) || (age.years >= 1 && age.years < 3)) {
+        // Toddler (1-3 years) - showing from 6 months for some social milestones
+        document.getElementById('section-toddler').style.display = 'block';
+    }
+    
+    if (age.years >= 3 && age.years < 6) {
+        // Preschool (3-6 years)
+        document.getElementById('section-preschool').style.display = 'block';
+    }
+    
+    if (age.years >= 6 && age.years <= 12) {
+        // School Age (6-12 years)
+        document.getElementById('section-school').style.display = 'block';
+    }
+    
+    // Show screening section for all ages
+    document.getElementById('section-screening').style.display = 'block';
+}
+
+// Hide all age-specific sections
+function hideAllSections() {
+    const sections = document.querySelectorAll('.age-section');
+    sections.forEach(section => {
+        section.style.display = 'none';
+    });
+}
+
+// Create summary section for score display
+function createSummarySection() {
+    // Check if summary box already exists
+    if (document.getElementById('score-summary-box')) {
+        return;
+    }
+
+    // Create summary box
+    const summaryContainer = document.createElement('div');
+    summaryContainer.id = 'score-summary-box';
+    summaryContainer.className = 'summary';
+    summaryContainer.innerHTML = `
+        <div class="summary-title">Developmental Score</div>
+        <strong>Total Milestones Assessed:</strong> <span id="total-milestones">0</span><br>
+        <strong>Achieved Milestones:</strong> <span id="achieved-count">0</span><br>
+        <strong>Completion Rate:</strong> <span id="completion-rate">0%</span><br>
+        <strong>Interpretation:</strong> <span id="score-interpretation">-</span>
+    `;
+
+    // Create calculate score button
+    const calculateBtn = document.createElement('button');
+    calculateBtn.type = 'button';
+    calculateBtn.id = 'calculate-score-btn';
+    calculateBtn.className = 'btn';
+    calculateBtn.textContent = 'Calculate Score';
+
+    // Find the place to insert them
+    const summarySection = document.querySelector('#section-summary');
+    const firstFieldset = summarySection.querySelector('fieldset');
+
+    // Insert the elements
+    summarySection.insertBefore(summaryContainer, firstFieldset);
+    summarySection.insertBefore(calculateBtn, summaryContainer);
+
+    // Add some styling
+    const style = document.createElement('style');
+    style.textContent = `
+        #score-summary-box {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 5px solid #999;
         }
+        #score-summary-box.normal {
+            border-left-color: green;
+            background-color: rgba(0, 128, 0, 0.1);
+        }
+        #score-summary-box.followup {
+            border-left-color: orange;
+            background-color: rgba(255, 165, 0, 0.1);
+        }
+        #score-summary-box.delay {
+            border-left-color: red;
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+        .summary-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Reset summary section
+function resetSummarySection() {
+    document.getElementById('total-milestones').textContent = '0';
+    document.getElementById('achieved-count').textContent = '0';
+    document.getElementById('completion-rate').textContent = '0%';
+    document.getElementById('score-interpretation').textContent = '-';
+    
+    const summaryBox = document.getElementById('score-summary-box');
+    summaryBox.classList.remove('normal', 'followup', 'delay');
+}
+
+// Calculate the score based on checked milestones
+function calculateScore() {
+    // Get all visible sections
+    const visibleSections = Array.from(document.querySelectorAll('.age-section'))
+        .filter(section => section.style.display !== 'none');
+    
+    let totalCheckboxes = 0;
+    let checkedCount = 0;
+    
+    // Count checkboxes in each visible section (excluding screening section)
+    visibleSections.forEach(section => {
+        if (section.id === 'section-screening') {
+            return; // Skip the screening section - these are red flags, not milestones
+        }
+        
+        const checkboxes = section.querySelectorAll('input[type="checkbox"]');
+        totalCheckboxes += checkboxes.length;
+        
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                checkedCount++;
+            }
+        });
+    });
+    
+    // Calculate percentage
+    const percentage = totalCheckboxes > 0 ? Math.round((checkedCount / totalCheckboxes) * 100) : 0;
+    
+    // Update summary
+    document.getElementById('total-milestones').textContent = totalCheckboxes;
+    document.getElementById('achieved-count').textContent = checkedCount;
+    document.getElementById('completion-rate').textContent = percentage + '%';
+    
+    // Set interpretation based on percentage (similar to LEST)
+    let interpretation = '-';
+    const summaryBox = document.getElementById('score-summary-box');
+    summaryBox.classList.remove('normal', 'followup', 'delay');
+    
+    if (percentage >= 85) {
+        interpretation = 'Normal Development';
+        summaryBox.classList.add('normal');
+        document.getElementById('normal').checked = true;
+    } else if (percentage >= 60) {
+        interpretation = 'Needs Follow-Up';
+        summaryBox.classList.add('followup');
+        document.getElementById('at-risk').checked = true;
+    } else {
+        interpretation = 'Delay Suspected';
+        summaryBox.classList.add('delay');
+        document.getElementById('delayed').checked = true;
+    }
+    
+    document.getElementById('score-interpretation').textContent = interpretation;
+    
+    // Check screening section for red flags
+    const redFlags = countRedFlags();
+    if (redFlags > 0) {
+        const currentInterpretation = document.getElementById('score-interpretation').textContent;
+        document.getElementById('score-interpretation').textContent = 
+            `${currentInterpretation} (${redFlags} red flag${redFlags > 1 ? 's' : ''} detected)`;
+        
+        // If there are red flags, ensure we're at least at "Needs Follow-Up" level
+        if (percentage >= 85) {
+            document.getElementById('at-risk').checked = true;
+            updateSummaryBoxClass();
+        }
+    }
+    
+    // Highlight areas of concern
+    updateAreasOfConcern();
+}
+
+// Count red flags in screening section
+function countRedFlags() {
+    const screeningSection = document.getElementById('section-screening');
+    if (screeningSection.style.display === 'none') {
+        return 0;
+    }
+    
+    const redFlagCheckboxes = screeningSection.querySelectorAll('input[type="checkbox"]:checked');
+    return redFlagCheckboxes.length;
+}
+
+// Update areas of concern text field
+function updateAreasOfConcern() {
+    const sections = [
+        { id: 'section-infant', name: 'Infant Development' },
+        { id: 'section-toddler', name: 'Toddler Development' },
+        { id: 'section-preschool', name: 'Preschool Development' },
+        { id: 'section-school', name: 'School-Age Development' }
+    ];
+    
+    const concernAreas = [];
+    
+    // Check each visible section
+    sections.forEach(section => {
+        const sectionElement = document.getElementById(section.id);
+        if (sectionElement && sectionElement.style.display !== 'none') {
+            
+            // Get all checkboxes, count total and checked
+            const checkboxes = sectionElement.querySelectorAll('input[type="checkbox"]');
+            const total = checkboxes.length;
+            
+            if (total === 0) return;
+            
+            let checked = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) checked++;
+            });
+            
+            // If less than 60% are checked, add to concerns
+            const percentComplete = (checked / total) * 100;
+            if (percentComplete < 60) {
+                const legends = sectionElement.querySelectorAll('legend');
+                legends.forEach(legend => {
+                    if (isLegendBelowThreshold(legend)) {
+                        concernAreas.push(legend.textContent);
+                    }
+                });
+            }
+        }
+    });
+    
+    // Check screening section separately for any red flags
+    const screeningSection = document.getElementById('section-screening');
+    if (screeningSection && screeningSection.style.display !== 'none') {
+        const redFlagCheckboxes = screeningSection.querySelectorAll('input[type="checkbox"]:checked');
+        if (redFlagCheckboxes.length > 0) {
+            concernAreas.push('Potential developmental disorder risk factors');
+        }
+    }
+    
+    // Update the concerns field
+    const concernsField = document.getElementById('concerns');
+    concernsField.value = concernAreas.join('; ');
+}
+
+// Helper function to check if a particular legend's checkboxes are below threshold
+function isLegendBelowThreshold(legend) {
+    const fieldset = legend.parentElement;
+    const checkboxes = fieldset.querySelectorAll('input[type="checkbox"]');
+    const total = checkboxes.length;
+    
+    if (total === 0) return false;
+    
+    let checked = 0;
+    checkboxes.forEach(cb => {
+        if (cb.checked) checked++;
+    });
+    
+    return (checked / total) * 100 < 60;
+}
+
+// Update summary box class based on selected development status
+function updateSummaryBoxClass() {
+    const summaryBox = document.getElementById('score-summary-box');
+    summaryBox.classList.remove('normal', 'followup', 'delay');
+    
+    if (document.getElementById('normal').checked) {
+        summaryBox.classList.add('normal');
+    } else if (document.getElementById('at-risk').checked) {
+        summaryBox.classList.add('followup');
+    } else if (document.getElementById('delayed').checked) {
+        summaryBox.classList.add('delay');
+    }
+}
     </script>
 </body>
 </html>
