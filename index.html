@@ -3,938 +3,601 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Child Development Assessment Tool</title>
+    <title>Comprehensive Child Development Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #4682B4;
-            padding-bottom: 10px;
+        .domain-card {
+            transition: all 0.2s ease-in-out;
         }
-
-        .header h1 {
-            color: #4682B4;
-        }
-
-        .form-section {
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"], input[type="date"], select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .radio-group {
-            margin: 5px 0;
-        }
-
-        fieldset {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        legend {
-            font-weight: bold;
-            color: #4682B4;
-            padding: 0 5px;
-        }
-
-        .checkbox-item {
-            margin: 5px 0;
-        }
-
-        .checkbox-container {
-            columns: 2;
-        }
-
-        .section-title {
-            background-color: #4682B4;
-            color: white;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 5px;
-        }
-
-        .subsection-title {
-            color: #4682B4;
-            border-bottom: 1px solid #4682B4;
-            margin-top: 15px;
-        }
-
-        .btn {
-            background-color: #4682B4;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-
-        .btn:hover {
-            background-color: #3a6d99;
-        }
-
-        .btn-group {
-            margin-top: 20px;
+        .milestone-label {
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .milestone-label input {
+            margin-right: 0.75rem;
+        }
+        .section-title-reference {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: #64748b; /* slate-500 */
         }
 
-        #summary {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-
-        .summary-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .signature-section {
-            margin-top: 30px;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
-        }
-
-        .signature-line {
-            border-bottom: 1px solid #000;
-            width: 250px;
-            display: inline-block;
-            margin-bottom: 5px;
-        }
-
-        .notes {
-            font-style: italic;
-            margin-top: 30px;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-radius: 5px;
-        }
-
-        .age-section {
-            display: none; /* Hide all sections by default */
+        #report-modal-content ul {
+            list-style-type: disc;
+            padding-left: 20px;
         }
 
         @media print {
-            button:not(.no-print) {
-                display: none;
+            body * {
+                visibility: hidden;
             }
-            
-            body {
+            #report-modal, #report-modal * {
+                visibility: visible;
+            }
+            #report-modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
                 padding: 0;
-                font-size: 12px;
+                overflow: visible;
+                box-shadow: none;
+                border: none;
             }
-            
-            .header {
-                margin-bottom: 15px;
+            #report-modal-content {
+                width: 100%;
+                height: 100%;
+                box-shadow: none;
+                border-radius: 0;
             }
-            
-            fieldset {
-                page-break-inside: avoid;
-            }
-            
-            .btn-group {
+            .no-print {
                 display: none;
             }
         }
     </style>
 </head>
-<body>
-    <div class="header">
-        <h1>Comprehensive Child Development Assessment</h1>
-        <p>A standardized tool for evaluating developmental milestones in children</p>
+<body class="bg-slate-100">
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Comprehensive Child Development Assessment</h1>
+            <p class="text-slate-600 mt-2">A practical tool for evaluating developmental milestones.</p>
+        </header>
+
+        <form id="assessmentForm" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            
+            <!-- Left Column: Data Entry -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                
+                <!-- Patient Details -->
+                <fieldset class="border-b-2 border-slate-200 pb-6 mb-6">
+                    <legend class="text-xl font-semibold text-slate-700 mb-4">Patient & Evaluator Details</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-slate-600 mb-1">Child's Name:</label>
+                            <input type="text" id="name" name="name" class="w-full border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label for="dob" class="block text-sm font-medium text-slate-600 mb-1">Date of Birth:</label>
+                            <input type="date" id="dob" name="dob" class="w-full border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                        <div>
+                            <label for="evaluator" class="block text-sm font-medium text-slate-600 mb-1">Evaluator Name & Designation:</label>
+                            <input type="text" id="evaluator" name="evaluator" class="w-full border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                        </div>
+                         <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">Gender:</label>
+                            <div class="flex items-center space-x-4 mt-2">
+                                <label class="flex items-center"><input type="radio" name="gender" value="Male" class="h-4 w-4 text-indigo-600 border-slate-300 focus:ring-indigo-500"> <span class="ml-2">Male</span></label>
+                                <label class="flex items-center"><input type="radio" name="gender" value="Female" class="h-4 w-4 text-indigo-600 border-slate-300 focus:ring-indigo-500"> <span class="ml-2">Female</span></label>
+                                <label class="flex items-center"><input type="radio" name="gender" value="Other" class="h-4 w-4 text-indigo-600 border-slate-300 focus:ring-indigo-500"> <span class="ml-2">Other</span></label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                 <!-- Milestones Sections -->
+                <div id="milestones-container" class="space-y-6">
+                    <p id="age-prompt" class="text-center text-slate-500 bg-slate-50 p-4 rounded-md">Please enter the child's date of birth to see relevant developmental milestones.</p>
+                    
+                    <!-- Infant Section (0-12 Months) -->
+                    <div class="age-section hidden" id="section-infant" data-age-min="0" data-age-max="12">
+                        <h2 class="section-title text-lg font-semibold text-slate-800 mb-3">Infant Milestones (0-12 Months) <span class="section-title-reference">(Ref: DDST-II, ASQ-3, LEST)</span></h2>
+                        <div class="space-y-4">
+                            <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Gross Motor">
+                                <h3 class="font-semibold text-indigo-700">Gross Motor</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Holds head steady (by 4m)">Holds head steady while sitting (By 4 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Rolls over (by 6m)">Rolls over (By 6 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Sits without support (by 8m)">Sits without support (By 8 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Pulls to stand (by 10m)">Pulls to stand (By 10 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Walks with support (by 12m)">Walks independently or with support (By 12 months)</label>
+                                </div>
+                            </div>
+                            <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Fine Motor">
+                                <h3 class="font-semibold text-indigo-700">Fine Motor & Adaptive</h3>
+                                 <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Grasps objects/rattle (by 4m)">Grasps objects/rattle (By 3-4 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Transfers objects hand to hand (by 7m)">Transfers objects hand to hand (By 6-7 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Pincer grasp (by 10m)">Develops pincer grasp (By 9-10 months)</label>
+                                </div>
+                            </div>
+                            <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Language & Communication">
+                                <h3 class="font-semibold text-indigo-700">Language & Communication</h3>
+                                 <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Coos and babbles (by 3m)">Coos and makes gurgling sounds (By 3 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Babbles chains of consonants (by 8m)">Babbles chains of consonants (e.g., 'ba-ba-ba') (By 7-8 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Responds to name (by 9m)">Responds to name (By 6-9 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Says 'mama'/'dada' & 1-2 words (by 12m)">Says "mama" and "dada" and 1-2 other words (By 12 months)</label>
+                                </div>
+                            </div>
+                            <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Social & Emotional">
+                                <h3 class="font-semibold text-indigo-700">Social & Emotional</h3>
+                                 <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Begins to smile socially (by 3m)">Begins to smile socially (By 2-3 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Develops stranger anxiety (by 8m)">Develops stranger anxiety (By 6-8 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Shows affection & imitates gestures (by 12m)">Shows affection and imitates simple social acts (e.g., waving) (By 12 months)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Toddler Section (1-3 Years) -->
+                    <div class="age-section hidden" id="section-toddler" data-age-min="12" data-age-max="36">
+                        <h2 class="section-title text-lg font-semibold text-slate-800 mb-3">Toddler Milestones (1-3 Years) <span class="section-title-reference">(Ref: LEST, ASQ-3, Bayley Scales)</span></h2>
+                        <div class="space-y-4">
+                           <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Gross Motor">
+                                <h3 class="font-semibold text-indigo-700">Gross Motor</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Walks independently (by 15m)">Walks independently (By 12-15 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Runs well (by 2y)">Runs well (By 2 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Climbs well/pedals tricycle (by 3y)">Climbs well, pedals a tricycle (By 3 years)</label>
+                                </div>
+                            </div>
+                             <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Fine Motor">
+                                <h3 class="font-semibold text-indigo-700">Fine Motor & Adaptive</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Builds tower of 2-3 blocks (by 18m)">Builds a tower of 2-3 blocks (By 15-18 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Copies a circle (by 3y)">Copies a circle (By 3 years)</label>
+                                </div>
+                            </div>
+                            <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Language & Communication">
+                                <h3 class="font-semibold text-indigo-700">Language & Communication</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Vocabulary of 10-20 words (by 18m)">Has a vocabulary of 10-20 words (By 18 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Uses two-word phrases (by 2y)">Uses two-word phrases; vocabulary of ~50 words (By 2 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Uses three-word sentences (by 3y)">Uses three-word sentences; speech is mostly intelligible (By 3 years)</label>
+                                </div>
+                            </div>
+                             <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Cognitive">
+                                <h3 class="font-semibold text-indigo-700">Cognitive</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Imitates gestures and sounds (by 18m)">Imitates gestures and sounds (By 18 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Begins to sort shapes and colors (by 2y)">Begins to sort shapes and colors (By 2 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Engages in make-believe play (by 3y)">Engages in make-believe play (By 3 years)</label>
+                                </div>
+                            </div>
+                             <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Social & Emotional">
+                                <h3 class="font-semibold text-indigo-700">Social & Emotional</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Engages in parallel play (by 24m)">Engages in parallel play (playing alongside others) (By 18-24 months)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Takes turns in games (by 3y)">Takes turns in games and shows concern for a crying friend (By 3 years)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preschool Section (3-6 Years) -->
+                    <div class="age-section hidden" id="section-preschool" data-age-min="36" data-age-max="72">
+                         <h2 class="section-title text-lg font-semibold text-slate-800 mb-3">Preschool Milestones (3-6 Years) <span class="section-title-reference">(Ref: Bayley Scales, Griffiths Scales, WPPSI-IV)</span></h2>
+                        <div class="space-y-4">
+                           <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Gross Motor">
+                                <h3 class="font-semibold text-indigo-700">Gross Motor</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Balances on one foot for 5s (by 4y)">Balances on one foot for 5 seconds (By 4 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Hops on one foot (by 5y)">Hops on one foot (By 5 years)</label>
+                                </div>
+                            </div>
+                             <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Fine Motor">
+                                <h3 class="font-semibold text-indigo-700">Fine Motor & Adaptive</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Uses scissors (by 4y)">Uses scissors (By 4 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Ties shoelaces (by 6y)">Ties shoelaces (By 5-6 years)</label>
+                                </div>
+                            </div>
+                            <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Language & Communication">
+                                <h3 class="font-semibold text-indigo-700">Language & Communication</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                   <label class="milestone-label"><input type="checkbox" data-milestone="Understands complex instructions (by 4y)">Understands complex instructions (By 3-4 years)</label>
+                                   <label class="milestone-label"><input type="checkbox" data-milestone="Tells simple stories (by 5y)">Tells simple stories (By 4-5 years)</label>
+                                </div>
+                            </div>
+                             <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Cognitive">
+                                <h3 class="font-semibold text-indigo-700">Cognitive & School Readiness</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Identifies basic shapes/colors (by 4y)">Identifies basic shapes/colors (By 3-4 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Counts to 10 (by 5y)">Counts to 10 (By 5 years)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- School-Aged Section (6-12 Years) -->
+                    <div class="age-section hidden" id="section-school-aged" data-age-min="72" data-age-max="144">
+                         <h2 class="section-title text-lg font-semibold text-slate-800 mb-3">School-Aged Milestones (6-12 Years) <span class="section-title-reference">(Ref: WPPSI-IV, CBCL, SDQ)</span></h2>
+                        <div class="space-y-4">
+                           <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Gross Motor">
+                                <h3 class="font-semibold text-indigo-700">Gross Motor</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Skips with coordination (by 6y)">Skips with coordination (By 6 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Rides a bicycle (by 7y)">Rides a bicycle (By 7 years)</label>
+                                </div>
+                            </div>
+                             <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Fine Motor">
+                                <h3 class="font-semibold text-indigo-700">Fine Motor & Adaptive</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Writes full sentences (by 7y)">Writes full sentences (By 6-7 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Uses adult-like grasp (by 7y)">Uses adult-like grasp for writing/drawing (By 7 years)</label>
+                                </div>
+                            </div>
+                            <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Language & Communication">
+                                <h3 class="font-semibold text-indigo-700">Language & Communication</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                   <label class="milestone-label"><input type="checkbox" data-milestone="Understands time concepts (by 6y)">Understands time concepts (e.g., yesterday, today, tomorrow) (By 6 years)</label>
+                                   <label class="milestone-label"><input type="checkbox" data-milestone="Reads age-appropriate books (by 8y)">Reads age-appropriate books (By 7-8 years)</label>
+                                </div>
+                            </div>
+                             <div class="domain-card border border-slate-200 p-4 rounded-lg" data-domain="Social & Emotional">
+                                <h3 class="font-semibold text-indigo-700">Social & Emotional</h3>
+                                <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Understands rules and consequences (by 5y)">Understands rules and consequences (By 5 years)</label>
+                                    <label class="milestone-label"><input type="checkbox" data-milestone="Makes and maintains friendships (by 7y)">Makes and maintains friendships (By 6-7 years)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Screening Section (Always visible if age is set) -->
+                    <div class="age-section hidden" id="section-screening">
+                        <h2 class="section-title text-lg font-semibold text-slate-800 mb-3">Developmental Red Flags <span class="section-title-reference">(Ref: M-CHAT, SCQ, CBCL)</span></h2>
+                        <div class="domain-card border-red-200 bg-red-50 p-4 rounded-lg" data-domain="Red Flags">
+                            <h3 class="font-semibold text-red-700">Screening for Potential Concerns</h3>
+                            <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="Limited eye contact">Limited eye contact</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="No social smiling by 6 months">No social smiling by 6 months</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="No babbling by 12 months">No babbling by 12 months</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="No pointing or waving by 18 months">No pointing or waving by 18 months</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="Repetitive behaviors or restricted interests">Repetitive behaviors or restricted interests</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="Significant loss of skills already acquired">Significant loss of skills already acquired (regression)</label>
+                            </div>
+                        </div>
+                         <div class="domain-card border-amber-200 bg-amber-50 p-4 rounded-lg mt-4" data-domain="Behavioral">
+                            <h3 class="font-semibold text-amber-700">Behavioral Concerns (SDQ-Based)</h3>
+                             <div class="mt-2 space-y-2 text-sm text-slate-600">
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="Aggressive behavior">Aggressive behavior</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="Hyperactivity or impulsivity">Hyperactivity or impulsivity</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="Anxiety or excessive shyness">Anxiety or excessive shyness</label>
+                                <label class="milestone-label"><input type="checkbox" data-red-flag="Difficulty in peer interactions">Difficulty in peer interactions</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right Column: Summary & Actions -->
+            <div class="lg:col-span-1 space-y-6 sticky top-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-slate-700 mb-4">Assessment Details</h2>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Assessment Date:</span>
+                            <span id="assessment-date" class="font-medium text-slate-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Child's Age:</span>
+                            <span id="age-display" class="font-medium text-slate-800">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                     <h2 class="text-xl font-semibold text-slate-700 mb-4">Practitioner Notes</h2>
+                     <textarea id="practitioner-notes" rows="4" class="w-full border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter clinical impressions, observations, or specific recommendations here..."></textarea>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-slate-700 mb-4">Actions</h2>
+                    <div class="flex flex-col space-y-3">
+                       <button type="button" id="generate-report-btn" class="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-slate-400 disabled:cursor-not-allowed">Generate Patient Report</button>
+                       <button type="button" id="reset-btn" class="w-full bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-md hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-400">Reset Form</button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 
-    <form id="assessmentForm">
-        <fieldset>
-            <legend>Patient Details</legend>
-            <div class="form-group">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="evaluator">Evaluator Name & Designation:</label>
-                <input type="text" id="evaluator" name="evaluator" required>
-            </div>
- <div class="form-group">
-                <label>Gender:</label>
-                <div class="radio-group">
-                    <input type="radio" id="male" name="gender" value="Male">
-                    <label for="male" style="display: inline;">Male</label>
-                </div>
-                <div class="radio-group">
-                    <input type="radio" id="female" name="gender" value="Female">
-                    <label for="female" style="display: inline;">Female</label>
-                </div>
-                <div class="radio-group">
-                    <input type="radio" id="other" name="gender" value="Other">
-                    <label for="other" style="display: inline;">Other</label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="dob">Date of Birth:</label>
-                <input type="date" id="dob" name="dob" required>
-            </div>
-
-            <div class="form-group">
-                <label for="age">Age (Auto-Calculated):</label>
-                <input type="text" id="age" name="age" readonly>
-            </div>
-
-            <div class="form-group">
-                <label for="assessment-date">Date of Assessment:</label>
-                <input type="text" id="assessment-date" name="assessment-date" readonly>
-            </div>
-            <button type="button" id="calculate-btn" class="btn">Calculate Age & Show Relevant Sections</button>
-        </fieldset>
-
-        <div class="age-section" id="section-infant">
-            <h2 class="section-title">Section 1: Infants (0-12 Months)</h2>
-            
-            <fieldset>
-                <legend>1.1 Gross Motor Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="hold-head" name="infant-gross-motor">
-                    <label for="hold-head" style="display: inline;">Holds head steady while sitting (By 4 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="rolls-over" name="infant-gross-motor">
-                    <label for="rolls-over" style="display: inline;">Rolls over (By 6 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="sits-unsupported" name="infant-gross-motor">
-                    <label for="sits-unsupported" style="display: inline;">Sits without support (By 8 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="pulls-stand" name="infant-gross-motor">
-                    <label for="pulls-stand" style="display: inline;">Pulls to stand (By 10 months)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>1.2 Fine Motor & Adaptive Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="grasps" name="infant-fine-motor">
-                    <label for="grasps" style="display: inline;">Grasps objects (By 3 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="transfers" name="infant-fine-motor">
-                    <label for="transfers" style="display: inline;">Transfers objects hand to hand (By 6 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="pincer" name="infant-fine-motor">
-                    <label for="pincer" style="display: inline;">Pincer grasp (By 9-12 months)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>1.3 Language & Communication</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="coos" name="infant-language">
-                    <label for="coos" style="display: inline;">Coos and babbles (By 3 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="responds-name" name="infant-language">
-                    <label for="responds-name" style="display: inline;">Responds to name (By 6-9 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="says-words" name="infant-language">
-                    <label for="says-words" style="display: inline;">Says 1-2 meaningful words (By 12 months)</label>
-                </div>
-            </fieldset>
+    <!-- Report Modal -->
+    <div id="report-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div id="report-modal-content" class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8">
+            <!-- Report content will be injected here -->
         </div>
+    </div>
 
-        <div class="age-section" id="section-toddler">
-            <h2 class="section-title">Section 2: Toddlers (1-3 Years)</h2>
-
-            <fieldset>
-                <legend>2.1 Gross Motor Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="walks" name="toddler-gross-motor">
-                    <label for="walks" style="display: inline;">Walks independently (By 12-15 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="runs" name="toddler-gross-motor">
-                    <label for="runs" style="display: inline;">Runs well (By 2 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="jumps" name="toddler-gross-motor">
-                    <label for="jumps" style="display: inline;">Jumps with both feet (By 3 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>2.2 Fine Motor & Adaptive Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="stacks" name="toddler-fine-motor">
-                    <label for="stacks" style="display: inline;">Stacks 2-3 blocks (By 18 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="draws-circle" name="toddler-fine-motor">
-                    <label for="draws-circle" style="display: inline;">Draws a circle (By 3 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>2.3 Language & Communication</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="two-words" name="toddler-language">
-                    <label for="two-words" style="display: inline;">Uses 2-word phrases (By 24 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="short-sentences" name="toddler-language">
-                    <label for="short-sentences" style="display: inline;">Speaks in short sentences (By 3 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>2.4 Social & Emotional Development</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="preference" name="toddler-social">
-                    <label for="preference" style="display: inline;">Shows preference for caregivers (By 6 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="imitates" name="toddler-social">
-                    <label for="imitates" style="display: inline;">Imitates actions (By 12-18 months)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="plays" name="toddler-social">
-                    <label for="plays" style="display: inline;">Plays with other children (By 3 years)</label>
-                </div>
-            </fieldset>
-        </div>
-
-        <div class="age-section" id="section-preschool">
-            <h2 class="section-title">Section 3: Preschoolers (3-6 Years)</h2>
-
-            <fieldset>
-                <legend>3.1 Gross Motor Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="balances" name="preschool-gross-motor">
-                    <label for="balances" style="display: inline;">Balances on one foot for 5 seconds (By 4 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="hops" name="preschool-gross-motor">
-                    <label for="hops" style="display: inline;">Hops on one foot (By 5 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>3.2 Fine Motor & Adaptive Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="scissors" name="preschool-fine-motor">
-                    <label for="scissors" style="display: inline;">Uses scissors (By 4 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="shoelaces" name="preschool-fine-motor">
-                    <label for="shoelaces" style="display: inline;">Ties shoelaces (By 5-6 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>3.3 Language & Communication</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="stories" name="preschool-language">
-                    <label for="stories" style="display: inline;">Tells simple stories (By 4-5 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="complex-instructions" name="preschool-language">
-                    <label for="complex-instructions" style="display: inline;">Understands complex instructions (By 3-4 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>3.4 Cognitive & School Readiness</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="identifies-shapes" name="preschool-cognitive">
-                    <label for="identifies-shapes" style="display: inline;">Identifies basic shapes/colors (By 3-4 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="counts" name="preschool-cognitive">
-                    <label for="counts" style="display: inline;">Counts to 10 (By 5 years)</label>
-                </div>
-            </fieldset>
-        </div>
-
-        <div class="age-section" id="section-school">
-            <h2 class="section-title">Section 4: School-Aged Children (6-12 Years)</h2>
-
-            <fieldset>
-                <legend>4.1 Gross Motor Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="skips" name="school-gross-motor">
-                    <label for="skips" style="display: inline;">Skips with coordination (By 6 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="bicycle" name="school-gross-motor">
-                    <label for="bicycle" style="display: inline;">Rides a bicycle (By 7 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>4.2 Fine Motor & Adaptive Skills</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="sentences" name="school-fine-motor">
-                    <label for="sentences" style="display: inline;">Writes full sentences (By 6-7 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="adult-grasp" name="school-fine-motor">
-                    <label for="adult-grasp" style="display: inline;">Uses adult-like grasp (By 7 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>4.3 Language & Communication</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="time-concepts" name="school-language">
-                    <label for="time-concepts" style="display: inline;">Understands time concepts (By 6 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="reads" name="school-language">
-                    <label for="reads" style="display: inline;">Reads age-appropriate books (By 7-8 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>4.4 Social & Emotional Development</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="friendships" name="school-social">
-                    <label for="friendships" style="display: inline;">Makes and maintains friendships (By 6-7 years)</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="rules" name="school-social">
-                    <label for="rules" style="display: inline;">Understands rules and consequences (By 5 years)</label>
-                </div>
-            </fieldset>
-
-            <fieldset>
-                <legend>4.5 Behavioral Concerns (SDQ-Based)</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="aggressive" name="school-behavior">
-                    <label for="aggressive" style="display: inline;">Aggressive behavior</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="hyperactivity" name="school-behavior">
-                    <label for="hyperactivity" style="display: inline;">Hyperactivity or impulsivity</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="anxiety" name="school-behavior">
-                    <label for="anxiety" style="display: inline;">Anxiety or excessive shyness</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="peer-difficulty" name="school-behavior">
-                    <label for="peer-difficulty" style="display: inline;">Difficulty in peer interactions</label>
-                </div>
-            </fieldset>
-        </div>
-
-        <div class="age-section" id="section-screening">
-            <h2 class="section-title">Section 5: Screening for Developmental Disorders</h2>
-
-            <fieldset>
-                <legend>5.1 Autism Red Flags (M-CHAT-Based)</legend>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="eye-contact" name="autism-screening">
-                    <label for="eye-contact" style="display: inline;">Limited eye contact</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="social-smile" name="autism-screening">
-                    <label for="social-smile" style="display: inline;">No social smiling by 6 months</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="no-babbling" name="autism-screening">
-                    <label for="no-babbling" style="display: inline;">No babbling by 12 months</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="no-pointing" name="autism-screening">
-                    <label for="no-pointing" style="display: inline;">No pointing or waving by 18 months</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="repetitive" name="autism-screening">
-                    <label for="repetitive" style="display: inline;">Repetitive behaviors or restricted interests</label>
-                </div>
-            </fieldset>
-        </div>
-
-        <div id="section-summary">
-            <h2 class="section-title">Section 6: Summary & Recommendations</h2>
-
-            <fieldset>
-                <legend>Assessment Summary</legend>
-                <div class="form-group">
-                    <label>Developmental Status:</label>
-                    <div class="radio-group">
-                        <input type="radio" id="normal" name="dev-status" value="Normal">
-                        <label for="normal" style="display: inline;">Normal</label>
-                    </div>
-                    <div class="radio-group">
-                        <input type="radio" id="at-risk" name="dev-status" value="At-Risk">
-                        <label for="at-risk" style="display: inline;">At-Risk</label>
-                    </div>
-                    <div class="radio-group">
-                        <input type="radio" id="delayed" name="dev-status" value="Delayed">
-                        <label for="delayed" style="display: inline;">Delayed</label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="concerns">Areas of Concern (if any):</label>
-                    <input type="text" id="concerns" name="concerns">
-                </div>
-
-                <div class="form-group">
-                    <label>Recommendations:</label>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="routine" name="recommendations">
-                        <label for="routine" style="display: inline;">Routine Follow-up</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="further-eval" name="recommendations">
-                        <label for="further-eval" style="display: inline;">Further Evaluation</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="referral" name="recommendations">
-                        <label for="referral" style="display: inline;">Referral</label>
-                    </div>
-                </div>
-            </fieldset>
-
-            <div class="signature-section">
-                <h3>Signature & Stamp</h3>
-                <div class="form-group">
-                    <label for="evaluator-name">Evaluator's Name:</label>
-                    <input type="text" id="evaluator-name" name="evaluator-name">
-                </div>
-                <div class="form-group">
-                    <label for="designation">Designation:</label>
-                    <input type="text" id="designation" name="designation">
-                </div>
-                <div class="form-group">
-                    <label for="signature">Signature:</label>
-                    <div class="signature-line"></div>
-                </div>
-                <div class="form-group">
-                    <label for="signature-date">Date:</label>
-                    <input type="text" id="signature-date" name="signature-date" readonly>
-                </div>
-            </div>
-
-            <div class="notes">
-                <p><strong>Notes:</strong></p>
-                <ul>
-                    <li>This form is intended as a screening tool and not a diagnostic test.</li>
-                    <li>If concerns arise, refer the child for a comprehensive developmental assessment.</li>
-                    <li>Adapt scoring based on standardized norms to automate result generation.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="btn-group">
-            <button type="button" id="print-btn" class="btn">Print Assessment</button>
-            <button type="button" id="reset-btn" class="btn">Reset Form</button>
-        </div>
-    </form>
 
     <script>
-        // Format date as DD/MM/YYYY
-function formatDate(date) {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-}
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Element References ---
+        const dobInput = document.getElementById('dob');
+        const agePrompt = document.getElementById('age-prompt');
+        const milestonesContainer = document.getElementById('milestones-container');
+        const assessmentDateEl = document.getElementById('assessment-date');
+        const ageDisplayEl = document.getElementById('age-display');
+        const generateReportBtn = document.getElementById('generate-report-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const reportModal = document.getElementById('report-modal');
 
-// Calculate age in years and months
-function calculateAge(birthDate) {
-    const today = new Date();
-    let years = today.getFullYear() - birthDate.getFullYear();
-    let months = today.getMonth() - birthDate.getMonth();
-    
-    if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
-        years--;
-        months += 12;
-    }
-    
-    return { years, months };
-}
+        // --- Initial State Setup ---
+        const today = new Date();
+        assessmentDateEl.textContent = today.toLocaleDateString('en-GB'); // DD/MM/YYYY
+        generateReportBtn.disabled = true;
 
-// Set today's date on load
-document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date();
-    const formattedDate = formatDate(today);
-    
-    document.getElementById('assessment-date').value = formattedDate;
-    document.getElementById('signature-date').value = formattedDate;
-    
-    // Create summary section if it doesn't exist
-    createSummarySection();
-    
-    // Set up event listeners
-    document.getElementById('calculate-btn').addEventListener('click', function() {
-        const dob = document.getElementById('dob').value;
-        if (!dob) {
-            alert('Please enter the date of birth first.');
-            return;
-        }
+        // --- Event Listeners ---
+        dobInput.addEventListener('change', handleDobChange);
+        generateReportBtn.addEventListener('click', generateReport);
+        resetBtn.addEventListener('click', resetForm);
         
-        const birthDate = new Date(dob);
-        const age = calculateAge(birthDate);
-        document.getElementById('age').value = `${age.years} years, ${age.months} months`;
-        
-        // Show relevant sections based on age
-        showRelevantSections(age);
-    });
-    
-    document.getElementById('print-btn').addEventListener('click', function() {
-        window.print();
-    });
-    
-    document.getElementById('reset-btn').addEventListener('click', function() {
-        if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
-            document.getElementById('assessmentForm').reset();
-            
-            // Reset calculated fields
-            document.getElementById('age').value = '';
-            document.getElementById('assessment-date').value = formattedDate;
-            document.getElementById('signature-date').value = formattedDate;
-            
-            // Reset summary section
-            resetSummarySection();
-            
-            // Hide all age sections
-            hideAllSections();
-        }
-    });
-    
-    // Transfer evaluator name to signature section
-    document.getElementById('evaluator').addEventListener('input', function() {
-        document.getElementById('evaluator-name').value = this.value;
-    });
-
-    // Add calculate score button
-    document.getElementById('calculate-score-btn').addEventListener('click', function() {
-        calculateScore();
-    });
-
-    // Auto-update dev-status radio buttons based on score
-    document.querySelectorAll('input[name="dev-status"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            updateSummaryBoxClass();
-        });
-    });
-});
-
-// Show relevant sections based on child's age
-function showRelevantSections(age) {
-    // Hide all sections first
-    hideAllSections();
-    
-    // Always show summary section
-    document.getElementById('section-summary').style.display = 'block';
-    
-    // Show appropriate sections based on age
-    if (age.years === 0 && age.months <= 12) {
-        // Infant (0-12 months)
-        document.getElementById('section-infant').style.display = 'block';
-    } 
-    
-    if ((age.years === 0 && age.months >= 6) || (age.years >= 1 && age.years < 3)) {
-        // Toddler (1-3 years) - showing from 6 months for some social milestones
-        document.getElementById('section-toddler').style.display = 'block';
-    }
-    
-    if (age.years >= 3 && age.years < 6) {
-        // Preschool (3-6 years)
-        document.getElementById('section-preschool').style.display = 'block';
-    }
-    
-    if (age.years >= 6 && age.years <= 12) {
-        // School Age (6-12 years)
-        document.getElementById('section-school').style.display = 'block';
-    }
-    
-    // Show screening section for all ages
-    document.getElementById('section-screening').style.display = 'block';
-}
-
-// Hide all age-specific sections
-function hideAllSections() {
-    const sections = document.querySelectorAll('.age-section');
-    sections.forEach(section => {
-        section.style.display = 'none';
-    });
-}
-
-// Create summary section for score display
-function createSummarySection() {
-    // Check if summary box already exists
-    if (document.getElementById('score-summary-box')) {
-        return;
-    }
-
-    // Create summary box
-    const summaryContainer = document.createElement('div');
-    summaryContainer.id = 'score-summary-box';
-    summaryContainer.className = 'summary';
-    summaryContainer.innerHTML = `
-        <div class="summary-title">Developmental Score</div>
-        <strong>Total Milestones Assessed:</strong> <span id="total-milestones">0</span><br>
-        <strong>Achieved Milestones:</strong> <span id="achieved-count">0</span><br>
-        <strong>Completion Rate:</strong> <span id="completion-rate">0%</span><br>
-        <strong>Interpretation:</strong> <span id="score-interpretation">-</span>
-    `;
-
-    // Create calculate score button
-    const calculateBtn = document.createElement('button');
-    calculateBtn.type = 'button';
-    calculateBtn.id = 'calculate-score-btn';
-    calculateBtn.className = 'btn';
-    calculateBtn.textContent = 'Calculate Score';
-
-    // Find the place to insert them
-    const summarySection = document.querySelector('#section-summary');
-    const firstFieldset = summarySection.querySelector('fieldset');
-
-    // Insert the elements
-    summarySection.insertBefore(summaryContainer, firstFieldset);
-    summarySection.insertBefore(calculateBtn, summaryContainer);
-
-    // Add some styling
-    const style = document.createElement('style');
-    style.textContent = `
-        #score-summary-box {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 5px;
-            border-left: 5px solid #999;
-        }
-        #score-summary-box.normal {
-            border-left-color: green;
-            background-color: rgba(0, 128, 0, 0.1);
-        }
-        #score-summary-box.followup {
-            border-left-color: orange;
-            background-color: rgba(255, 165, 0, 0.1);
-        }
-        #score-summary-box.delay {
-            border-left-color: red;
-            background-color: rgba(255, 0, 0, 0.1);
-        }
-        .summary-title {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Reset summary section
-function resetSummarySection() {
-    document.getElementById('total-milestones').textContent = '0';
-    document.getElementById('achieved-count').textContent = '0';
-    document.getElementById('completion-rate').textContent = '0%';
-    document.getElementById('score-interpretation').textContent = '-';
-    
-    const summaryBox = document.getElementById('score-summary-box');
-    summaryBox.classList.remove('normal', 'followup', 'delay');
-}
-
-// Calculate the score based on checked milestones
-function calculateScore() {
-    // Get all visible sections
-    const visibleSections = Array.from(document.querySelectorAll('.age-section'))
-        .filter(section => section.style.display !== 'none');
-    
-    let totalCheckboxes = 0;
-    let checkedCount = 0;
-    
-    // Count checkboxes in each visible section (excluding screening section)
-    visibleSections.forEach(section => {
-        if (section.id === 'section-screening') {
-            return; // Skip the screening section - these are red flags, not milestones
-        }
-        
-        const checkboxes = section.querySelectorAll('input[type="checkbox"]');
-        totalCheckboxes += checkboxes.length;
-        
-        checkboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                checkedCount++;
+        reportModal.addEventListener('click', (e) => {
+            if (e.target.id === 'report-modal' || e.target.classList.contains('close-modal-btn')) {
+                reportModal.classList.add('hidden');
             }
         });
-    });
-    
-    // Calculate percentage
-    const percentage = totalCheckboxes > 0 ? Math.round((checkedCount / totalCheckboxes) * 100) : 0;
-    
-    // Update summary
-    document.getElementById('total-milestones').textContent = totalCheckboxes;
-    document.getElementById('achieved-count').textContent = checkedCount;
-    document.getElementById('completion-rate').textContent = percentage + '%';
-    
-    // Set interpretation based on percentage (similar to LEST)
-    let interpretation = '-';
-    const summaryBox = document.getElementById('score-summary-box');
-    summaryBox.classList.remove('normal', 'followup', 'delay');
-    
-    if (percentage >= 85) {
-        interpretation = 'Normal Development';
-        summaryBox.classList.add('normal');
-        document.getElementById('normal').checked = true;
-    } else if (percentage >= 60) {
-        interpretation = 'Needs Follow-Up';
-        summaryBox.classList.add('followup');
-        document.getElementById('at-risk').checked = true;
-    } else {
-        interpretation = 'Delay Suspected';
-        summaryBox.classList.add('delay');
-        document.getElementById('delayed').checked = true;
-    }
-    
-    document.getElementById('score-interpretation').textContent = interpretation;
-    
-    // Check screening section for red flags
-    const redFlags = countRedFlags();
-    if (redFlags > 0) {
-        const currentInterpretation = document.getElementById('score-interpretation').textContent;
-        document.getElementById('score-interpretation').textContent = 
-            `${currentInterpretation} (${redFlags} red flag${redFlags > 1 ? 's' : ''} detected)`;
         
-        // If there are red flags, ensure we're at least at "Needs Follow-Up" level
-        if (percentage >= 85) {
-            document.getElementById('at-risk').checked = true;
-            updateSummaryBoxClass();
+        // --- Functions ---
+        
+        function handleDobChange() {
+            const dob = dobInput.value;
+            if (!dob) {
+                resetAgeSections();
+                return;
+            }
+
+            const birthDate = new Date(dob);
+            if (birthDate > today) {
+                alert("Date of Birth cannot be in the future.");
+                resetAgeSections();
+                dobInput.value = '';
+                return;
+            }
+
+            const age = calculateAge(birthDate);
+            ageDisplayEl.textContent = `${age.years} years, ${age.months} months`;
+            showRelevantSections(age.totalMonths);
+            generateReportBtn.disabled = false;
         }
-    }
-    
-    // Highlight areas of concern
-    updateAreasOfConcern();
-}
 
-// Count red flags in screening section
-function countRedFlags() {
-    const screeningSection = document.getElementById('section-screening');
-    if (screeningSection.style.display === 'none') {
-        return 0;
-    }
-    
-    const redFlagCheckboxes = screeningSection.querySelectorAll('input[type="checkbox"]:checked');
-    return redFlagCheckboxes.length;
-}
+        function calculateAge(birthDate) {
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            let days = today.getDate() - birthDate.getDate();
 
-// Update areas of concern text field
-function updateAreasOfConcern() {
-    const sections = [
-        { id: 'section-infant', name: 'Infant Development' },
-        { id: 'section-toddler', name: 'Toddler Development' },
-        { id: 'section-preschool', name: 'Preschool Development' },
-        { id: 'section-school', name: 'School-Age Development' }
-    ];
-    
-    const concernAreas = [];
-    
-    // Check each visible section
-    sections.forEach(section => {
-        const sectionElement = document.getElementById(section.id);
-        if (sectionElement && sectionElement.style.display !== 'none') {
-            
-            // Get all checkboxes, count total and checked
-            const checkboxes = sectionElement.querySelectorAll('input[type="checkbox"]');
-            const total = checkboxes.length;
-            
-            if (total === 0) return;
-            
-            let checked = 0;
-            checkboxes.forEach(cb => {
-                if (cb.checked) checked++;
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            const totalMonths = years * 12 + months;
+            return { years, months, days, totalMonths };
+        }
+
+        function showRelevantSections(totalMonths) {
+            agePrompt.classList.add('hidden');
+            const sections = document.querySelectorAll('.age-section');
+            sections.forEach(section => {
+                if (section.id === 'section-screening') {
+                    section.classList.remove('hidden');
+                } else {
+                    const min = parseInt(section.dataset.ageMin, 10);
+                    const max = parseInt(section.dataset.ageMax, 10);
+                    if (totalMonths >= min && totalMonths < max) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                }
             });
+        }
+        
+        function resetAgeSections() {
+            ageDisplayEl.textContent = '-';
+            document.querySelectorAll('.age-section').forEach(s => s.classList.add('hidden'));
+            agePrompt.classList.remove('hidden');
+            generateReportBtn.disabled = true;
+        }
+
+        function analyzeDomains() {
+            const results = {
+                domains: {},
+                redFlags: []
+            };
+            const visibleSections = document.querySelectorAll('.age-section:not(.hidden):not(#section-screening)');
             
-            // If less than 60% are checked, add to concerns
-            const percentComplete = (checked / total) * 100;
-            if (percentComplete < 60) {
-                const legends = sectionElement.querySelectorAll('legend');
-                legends.forEach(legend => {
-                    if (isLegendBelowThreshold(legend)) {
-                        concernAreas.push(legend.textContent);
+            visibleSections.forEach(section => {
+                const domainCards = section.querySelectorAll('.domain-card');
+                domainCards.forEach(card => {
+                    const domainName = card.dataset.domain;
+                    if (!domainName) return; // Skip cards without domain
+                    
+                    const checkboxes = card.querySelectorAll('input[type="checkbox"]');
+                    const achieved = Array.from(checkboxes).filter(cb => cb.checked);
+                    const notAchieved = Array.from(checkboxes).filter(cb => !cb.checked);
+                    
+                    if (!results.domains[domainName]) {
+                        results.domains[domainName] = { achieved: [], notAchieved: [], total: 0, score: 0 };
+                    }
+
+                    results.domains[domainName].achieved.push(...achieved.map(cb => cb.dataset.milestone));
+                    results.domains[domainName].notAchieved.push(...notAchieved.map(cb => cb.dataset.milestone));
+                    results.domains[domainName].total += checkboxes.length;
+                    
+                    if (results.domains[domainName].total > 0) {
+                        results.domains[domainName].score = Math.round((results.domains[domainName].achieved.length / results.domains[domainName].total) * 100);
+                    } else {
+                         results.domains[domainName].score = 100;
                     }
                 });
+            });
+
+            const redFlagCheckboxes = document.querySelectorAll('#section-screening input[type="checkbox"]:checked');
+            results.redFlags = Array.from(redFlagCheckboxes).map(cb => cb.dataset.redFlag);
+
+            return results;
+        }
+
+        function generateReport() {
+            const formData = new FormData(document.getElementById('assessmentForm'));
+            const data = Object.fromEntries(formData.entries());
+            const analysis = analyzeDomains();
+
+            let summaryText = `Based on this assessment, ${data.name || 'the child'} demonstrates skills that are generally developing as expected for their age. `;
+            const areasOfConcern = [];
+
+            Object.entries(analysis.domains).forEach(([domain, details]) => {
+                if (details.score < 75) { // Threshold for concern
+                    areasOfConcern.push(domain.toLowerCase());
+                }
+            });
+            
+            if (analysis.redFlags.length > 0) {
+                 summaryText = `This assessment indicates potential developmental concerns for ${data.name || 'the child'}. `;
+            } else if (areasOfConcern.length > 1) {
+                summaryText = `This assessment suggests some areas where ${data.name || 'the child'} may benefit from additional support. `;
+            } else if (areasOfConcern.length === 1) {
+                 summaryText = `While most skills are developing well, this assessment indicates that ${data.name || 'the child'} may benefit from support in the area of ${areasOfConcern[0]}. `;
+            }
+
+            if (areasOfConcern.length > 0) {
+                 summaryText += `The main areas for further observation are: ${areasOfConcern.join(', ')}. `;
+            }
+            if(analysis.redFlags.length > 0) {
+                summaryText += `Additionally, the following developmental red flags and/or behavioral concerns were noted: ${analysis.redFlags.join(', ')}. These warrant a more comprehensive evaluation.`;
+            } else {
+                 summaryText += "No significant developmental red flags or behavioral concerns were noted at this time. Continued monitoring through routine check-ups is recommended.";
+            }
+
+            let domainHtml = '';
+            Object.entries(analysis.domains).forEach(([domain, details]) => {
+                if (domain === "Red Flags" || domain === "Behavioral") return;
+                const statusColor = details.score >= 85 ? 'text-green-600' : details.score >= 60 ? 'text-orange-600' : 'text-red-600';
+                const statusText = details.score >= 85 ? 'Age-Appropriate' : details.score >= 60 ? 'Needs Monitoring' : 'Potential Delay';
+
+                domainHtml += `
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-slate-500">${domain}</dt>
+                        <dd class="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2">
+                           <p class="font-semibold ${statusColor}">${statusText} (${details.score}%)</p>
+                           ${details.notAchieved.length > 0 ? `<p class="mt-1 text-xs text-slate-500">Milestones to monitor: ${details.notAchieved.join(', ')}</p>` : ''}
+                        </dd>
+                    </div>`;
+            });
+
+            const reportHtml = `
+                <div class="p-2 md:p-6">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Child Development Assessment Report</h2>
+                            <p class="text-slate-500">Private & Confidential</p>
+                        </div>
+                        <button class="no-print close-modal-btn text-3xl font-bold text-slate-400 hover:text-slate-600">&times;</button>
+                    </div>
+
+                    <!-- Patient Info -->
+                    <div class="border-t border-b border-slate-200 py-4 mb-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-3">Patient Details</h3>
+                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <div class="flex"><dt class="w-1/3 font-medium text-slate-500">Name:</dt><dd class="w-2/3 text-slate-800">${data.name || 'N/A'}</dd></div>
+                            <div class="flex"><dt class="w-1/3 font-medium text-slate-500">Gender:</dt><dd class="w-2/3 text-slate-800">${data.gender || 'N/A'}</dd></div>
+                            <div class="flex"><dt class="w-1/3 font-medium text-slate-500">Date of Birth:</dt><dd class="w-2/3 text-slate-800">${dobInput.value ? new Date(dobInput.value).toLocaleDateString('en-GB') : 'N/A'}</dd></div>
+                            <div class="flex"><dt class="w-1/3 font-medium text-slate-500">Age at Assessment:</dt><dd class="w-2/3 text-slate-800">${ageDisplayEl.textContent}</dd></div>
+                            <div class="flex"><dt class="w-1/3 font-medium text-slate-500">Assessment Date:</dt><dd class="w-2/3 text-slate-800">${assessmentDateEl.textContent}</dd></div>
+                        </dl>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-2">Assessment Summary</h3>
+                        <p class="text-sm text-slate-700 bg-slate-50 p-4 rounded-md">${summaryText}</p>
+                    </div>
+                    
+                     <!-- Domain Breakdown -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-2">Domain-Specific Performance</h3>
+                        <div class="border border-slate-200 rounded-md divide-y divide-slate-200">
+                           ${domainHtml}
+                        </div>
+                    </div>
+
+                    <!-- Red Flags -->
+                    ${analysis.redFlags.length > 0 ? `
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-red-700 mb-2">Red Flags / Behavioral Concerns Noted</h3>
+                        <ul class="text-sm text-red-800 bg-red-50 p-4 rounded-md list-disc list-inside">
+                           ${analysis.redFlags.map(flag => `<li>${flag}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+
+                    <!-- Notes & Signature -->
+                     <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-slate-700 mb-2">Practitioner Notes & Recommendations</h3>
+                        <p class="text-sm text-slate-700 border border-slate-200 p-4 rounded-md min-h-[80px]">
+                           ${document.getElementById('practitioner-notes').value.replace(/\n/g, '<br>') || 'No specific notes entered.'}
+                        </p>
+                    </div>
+
+                    <div class="pt-8 mt-8 border-t border-slate-200">
+                        <div class="grid grid-cols-2 gap-8 text-sm">
+                            <div>
+                                <p class="font-semibold text-slate-800">${data.evaluator || 'N/A'}</p>
+                                <p class="text-slate-500">Evaluator</p>
+                                <div class="mt-12 border-b border-slate-400"></div>
+                                <p class="mt-1">Signature</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-500">Date: ${assessmentDateEl.textContent}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-center text-xs text-slate-400 mt-8">Disclaimer: This is a developmental screening tool and not a diagnostic assessment. The results should be interpreted by a qualified professional.</p>
+                </div>
+                <div class="bg-slate-50 p-4 text-right rounded-b-lg no-print">
+                    <button class="close-modal-btn bg-slate-200 text-slate-800 font-semibold py-2 px-4 rounded-md hover:bg-slate-300">Close</button>
+                    <button onclick="window.print()" class="bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700">Print Report</button>
+                </div>
+            `;
+
+            document.getElementById('report-modal-content').innerHTML = reportHtml;
+            reportModal.classList.remove('hidden');
+        }
+        
+        function resetForm() {
+            if (confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
+                document.getElementById('assessmentForm').reset();
+                resetAgeSections();
             }
         }
     });
-    
-    // Check screening section separately for any red flags
-    const screeningSection = document.getElementById('section-screening');
-    if (screeningSection && screeningSection.style.display !== 'none') {
-        const redFlagCheckboxes = screeningSection.querySelectorAll('input[type="checkbox"]:checked');
-        if (redFlagCheckboxes.length > 0) {
-            concernAreas.push('Potential developmental disorder risk factors');
-        }
-    }
-    
-    // Update the concerns field
-    const concernsField = document.getElementById('concerns');
-    concernsField.value = concernAreas.join('; ');
-}
-
-// Helper function to check if a particular legend's checkboxes are below threshold
-function isLegendBelowThreshold(legend) {
-    const fieldset = legend.parentElement;
-    const checkboxes = fieldset.querySelectorAll('input[type="checkbox"]');
-    const total = checkboxes.length;
-    
-    if (total === 0) return false;
-    
-    let checked = 0;
-    checkboxes.forEach(cb => {
-        if (cb.checked) checked++;
-    });
-    
-    return (checked / total) * 100 < 60;
-}
-
-// Update summary box class based on selected development status
-function updateSummaryBoxClass() {
-    const summaryBox = document.getElementById('score-summary-box');
-    summaryBox.classList.remove('normal', 'followup', 'delay');
-    
-    if (document.getElementById('normal').checked) {
-        summaryBox.classList.add('normal');
-    } else if (document.getElementById('at-risk').checked) {
-        summaryBox.classList.add('followup');
-    } else if (document.getElementById('delayed').checked) {
-        summaryBox.classList.add('delay');
-    }
-}
     </script>
 </body>
 </html>
+
